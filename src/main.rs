@@ -1,8 +1,7 @@
 use std::env;
 use std::i64;
-use wake_on_lan;
 use std::process;
-
+use wake_on_lan;
 
 fn parse_mac(mac_str: &str) -> [u8; 6] {
     let v: Vec<_> = mac_str
@@ -21,9 +20,9 @@ fn parse_mac(mac_str: &str) -> [u8; 6] {
 fn send_wol(address: &[u8; 6]) {
     let magic_packet = wake_on_lan::MagicPacket::new(&address);
     match magic_packet.send() {
-        Ok(ok) => println!("Woked up {:X?}", address),
+        Ok(ok) => println!("Woked up {:X?}", address.connect('.')),
         Err(err) => println!("Can't wake up {:X?}. {:?}", address, err),
-        _ => { panic!("Can't wake up {:X?}.");},
+        _ => panic!("Can't wake up {:X?}."),
     }
 }
 
@@ -32,17 +31,14 @@ fn main() {
     match args.len() {
         1 => {
             println!("Specify a MAC address first.");
-process::exit(0x1);
-        }
-        2 => {
-            println!("Got:\t{}", args[1]);
-            let address = parse_mac(&args[1]);
-            println!("Parsed:\t {:#X?}", address);
-            send_wol(&address);
+            process::exit(0x1);
         }
         _ => {
-            println!("Unrecognozed options. Specify a MAC address only.");
-process::exit(0x1);
+            println!("Got {} addresses.", args.len() - 1);
+            for i in 1..args.len() {
+                let address = parse_mac(&args[i]);
+                send_wol(&address);
+            }
         }
     }
 }
