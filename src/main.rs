@@ -20,7 +20,12 @@ fn parse_mac(mac_str: &str) -> [u8; 6] {
 fn send_wol(address: &[u8; 6]) {
     let magic_packet = wake_on_lan::MagicPacket::new(&address);
     match magic_packet.send() {
-        Ok(ok) => println!("Woked up {:X?}", address.connect('.')),
+        Ok(ok) => {
+          print!("Woked up ");
+          for i in 0..address.len() {
+            print!("{:X}{}", address[i], (if i == address.len()-1 { "" } else { ":" }))
+          }
+          println!("");}
         Err(err) => println!("Can't wake up {:X?}. {:?}", address, err),
         _ => panic!("Can't wake up {:X?}."),
     }
