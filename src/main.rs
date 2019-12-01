@@ -3,6 +3,15 @@ use std::i64;
 use std::process;
 use wake_on_lan;
 
+extern crate router_os;
+
+use router_os::ApiRos;
+
+
+use std::net::TcpStream;
+use std::io::BufRead;
+use std::io;
+
 fn parse_mac(mac_str: &str) -> [u8; 6] {
     let v: Vec<_> = mac_str
         .split(':')
