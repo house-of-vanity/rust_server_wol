@@ -8,5 +8,5 @@ edition = "2018"
 
 [dependencies]
 wake-on-lan = "0.2.0"
-eui48 = "0.1.0"
+yaml-rust = "0.4.3"
 router_os = { path = "router_os" }
