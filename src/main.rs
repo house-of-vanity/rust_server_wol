@@ -6,11 +6,19 @@ use wake_on_lan;
 extern crate router_os;
 
 use router_os::ApiRos;
-
-
 use std::net::TcpStream;
 use std::io::BufRead;
 use std::io;
+
+fn get_line() -> String {
+   let stdin_u = io::stdin();
+   let mut stdin = stdin_u.lock();
+   let mut line = String::new();
+   stdin.read_line(&mut line).unwrap();
+	line.pop();
+   return line;
+}
+
 
 fn parse_mac(mac_str: &str) -> [u8; 6] {
     let v: Vec<_> = mac_str
@@ -41,6 +49,14 @@ fn send_wol(address: &[u8; 6]) {
 }
 
 fn main() {
+    let mut stream = TcpStream::connect("192.168.88.1:8728").unwrap();
+    let mut apiros = ApiRos::new(&mut stream);
+	apiros.login("alexandr".to_string(), "Tail-fpwd1337".to_string());
+    let x = apiros.talk(vec!["/ip/dhcp-server/lease/print".to_string()]);
+    println!("{}", x.len());
+    for i in 0..x.len()-1 {
+        println!("{:?}", x[i].1["=mac-address"]);
+    }
     let args: Vec<String> = env::args().collect();
     match args.len() {
         1 => {

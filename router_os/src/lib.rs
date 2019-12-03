@@ -135,12 +135,12 @@ impl<'a> ApiRos<'a> {
 	fn read_word(&mut self) -> String {
 		let len = self.read_len();
 		let ret = self.read_str(len as usize);
-		if len > 0 { println!(">>> {}", ret); }
+		//if len > 0 { println!(">>> {}", ret); }
 		ret
 	}
 
 	fn write_word(&mut self, w: String) {
-		if w.len() > 0 { println!("<<< {}", w); }
+		//if w.len() > 0 { println!("<<< {}", w); }
 		self.write_len(w.len() as u32);
 		self.write_str(&w.as_bytes());
 	}
@@ -167,7 +167,7 @@ impl<'a> ApiRos<'a> {
 	}
 
 
-	fn talk(&mut self, words: Vec<String>) -> Vec<(String, BTreeMap<String, String>)>{
+	pub fn talk(&mut self, words: Vec<String>) -> Vec<(String, BTreeMap<String, String>)>{
 		if self.write_sentence(words) == 0 {
 			return vec![];
 		}
@@ -200,18 +200,8 @@ impl<'a> ApiRos<'a> {
 	}
 
 	pub fn login(&mut self, username: String, pwd: String) {
-		let mut chal: Vec<u8> = Vec::new();
-		for (_ /*reply*/, attrs) in self.talk(vec![r"/login".to_string()]) {
-			chal = hex_binascii(attrs["=ret"].clone()).unwrap();
-		}
-
-		let mut md = Md5::new();
-		md.input(&[0]);
-		md.input(pwd.as_bytes());
-		md.input(&chal[..]);
-
 		self.talk(vec![r"/login".to_string(), format!("=name={}", username),
-						format!("=response=00{}",md.result_str())]);
+						format!("=password={}",pwd)]);
 	}
 }
 
